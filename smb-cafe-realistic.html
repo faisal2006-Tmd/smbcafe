@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SMB Cafe</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Inter:wght@400;600&display=swap">
+<style>
+:root{--bg:#120a06;--fg:#f6e9d8;--accent:#f0a35c;--card:rgba(24,14,9,.66);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,sans-serif}
+canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+header{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:calc(1rem + env(safe-area-inset-top,0px)) 6vw 1rem}
+header b{font-family:'Playfair Display',Georgia,serif;font-size:1.4rem;letter-spacing:.04em;color:var(--accent)}
+nav a{color:var(--fg);text-decoration:none;margin-left:1.2rem;font-size:.9rem;opacity:.85}
+main{position:relative;z-index:1}
+section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:5rem 7vw}
+section:nth-child(even){align-items:flex-end;text-align:right}
+h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(3rem,11vw,7.5rem);margin:0;line-height:.95;font-weight:800;text-shadow:0 6px 40px rgba(0,0,0,.6)}
+h1 span{color:var(--accent)}
+h2{font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.8rem,5vw,2.8rem);margin:0 0 1rem;color:var(--accent)}
+p{max-width:28rem;font-size:1.1rem;line-height:1.65;opacity:.92}
+.card{background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(240,163,92,.25);padding:1.6rem 2rem;border-radius:20px;max-width:27rem;width:100%;text-align:left;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.row{display:flex;justify-content:space-between;gap:2rem;padding:.35rem 0;border-bottom:1px dashed rgba(240,163,92,.35)}
+.cat{margin:.9rem 0 .15rem;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+a.btn{display:inline-block;margin-top:1.2rem;padding:.85rem 1.7rem;background:var(--accent);color:#2a1408;font-weight:600;border-radius:999px;text-decoration:none}
+.hint{opacity:.6;font-size:.9rem;margin-top:2rem}
+@media (max-width:760px){nav{display:none}section,section:nth-child(even){align-items:flex-start;text-align:left;justify-content:flex-end;padding-bottom:12vh}.card{background:rgba(24,14,9,.82)}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<header><b>SMB Cafe</b><nav><a href="#home">Home</a><a href="#menu">Menu</a><a href="#about">Story</a><a href="#visit">Visit</a></nav></header>
+<main>
+<section id="home"><h1>SMB<br><span>Cafe</span></h1><p>Fresh coffee, hot pizzas and juicy burgers, served right at GITAM.</p><div><a class="btn" href="#menu">View menu</a></div><div class="hint">↓ scroll to explore</div></section>
+<section id="menu"><div class="card"><h2>Menu</h2>
+<div class="cat">Pizzas</div>
+<div class="row"><span>Margherita</span><span>₹199</span></div>
+<div class="row"><span>Farmhouse Veg</span><span>₹249</span></div>
+<div class="row"><span>Chicken Tikka</span><span>₹299</span></div>
+<div class="cat">Burgers</div>
+<div class="row"><span>Veg Burger</span><span>₹120</span></div>
+<div class="row"><span>Chicken Burger</span><span>₹160</span></div>
+<div class="row"><span>Cheese Burger</span><span>₹180</span></div>
+<div class="cat">Snacks</div>
+<div class="row"><span>French Fries</span><span>₹90</span></div>
+<div class="row"><span>Veg Sandwich</span><span>₹110</span></div>
+<div class="row"><span>Pasta</span><span>₹170</span></div>
+<div class="cat">Drinks</div>
+<div class="row"><span>Coffee</span><span>₹100</span></div>
+<div class="row"><span>Cold Coffee</span><span>₹130</span></div>
+<div class="row"><span>Milkshake</span><span>₹150</span></div></div></section>
+<section id="about"><div class="card"><h2>Our story</h2><p>A cozy hangout for friends, study breaks and late-evening cravings. Everything is made fresh to order.</p></div></section>
+<section id="visit"><div class="card"><h2>Visit us</h2><p>GITAM, Hyderabad<br>Open daily · 8 am – 10 pm</p><a class="btn" href="#home">Back to top</a></div></section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+if(!window.THREE)return;
+var T=THREE,canvas=document.getElementById('c');
+var R=new T.WebGLRenderer({canvas:canvas,antialias:true});
+R.setPixelRatio(Math.min(devicePixelRatio,2));
+R.outputEncoding=T.sRGBEncoding;R.toneMapping=T.ACESFilmicToneMapping;R.toneMappingExposure=1.15;
+R.shadowMap.enabled=true;R.shadowMap.type=T.PCFSoftShadowMap;
+var S=new T.Scene();S.background=new T.Color(0x120a06);S.fog=new T.Fog(0x120a06,20,48);
+var cam=new T.PerspectiveCamera(38,1,.1,100);
+
+function tex(w,h,fn,srgb){var c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'),w,h);var t=new T.CanvasTexture(c);if(srgb!==false)t.encoding=T.sRGBEncoding;t.anisotropy=8;return t}
+function mesh(g,m,x,y,z){var o=new T.Mesh(g,m);o.position.set(x||0,y||0,z||0);o.castShadow=o.receiveShadow=true;return o}
+function std(c,r,m){return new T.MeshStandardMaterial({color:c,roughness:r==null?.6:r,metalness:m||0})}
+
+/* lights */
+S.add(new T.HemisphereLight(0xffd9b0,0x2a140a,.55));
+var key=new T.DirectionalLight(0xffe0bd,1.5);key.position.set(6,12,8);key.castShadow=true;key.shadow.mapSize.set(2048,2048);
+var sc=key.shadow.camera;sc.left=-22;sc.right=22;sc.top=10;sc.bottom=-10;sc.near=1;sc.far=40;key.shadow.bias=-.0004;key.shadow.radius=4;
+S.add(key);S.add(key.target);key.target.position.set(7,0,0);
+var rim=new T.PointLight(0x5fb4c8,.9,30);rim.position.set(7,5,-8);S.add(rim);
+[0,7,14].forEach(function(x){var p=new T.PointLight(0xffb066,.9,10);p.position.set(x,4.2,1.5);S.add(p)});
+
+/* wooden table */
+var wood=tex(1024,1024,function(c,w,h){
+c.fillStyle='#5b3920';c.fillRect(0,0,w,h);
+for(var i=0;i<8;i++){c.fillStyle='hsl(26,'+(35+Math.random()*15)+'%,'+(22+Math.random()*10)+'%)';c.fillRect(i*128,0,126,h);c.fillStyle='rgba(0,0,0,.45)';c.fillRect(i*128+126,0,3,h)}
+for(var j=0;j<420;j++){c.strokeStyle='rgba('+(Math.random()<.5?'20,10,4':'150,100,60')+','+(Math.random()*.12)+')';c.lineWidth=Math.random()*2+.5;var x=Math.random()*w;c.beginPath();c.moveTo(x,0);c.bezierCurveTo(x+12,h*.3,x-12,h*.6,x+6,h);c.stroke()}});
+wood.wrapS=wood.wrapT=T.RepeatWrapping;wood.repeat.set(10,3);
+var table=new T.Mesh(new T.PlaneGeometry(80,26),new T.MeshStandardMaterial({map:wood,roughness:.5}));
+table.rotation.x=-Math.PI/2;table.position.set(7,0,0);table.receiveShadow=true;S.add(table);
+
+/* bokeh background */
+var bk=tex(64,64,function(c){var g=c.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(.6,'rgba(255,255,255,.35)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,64,64)},false);
+for(var b=0;b<46;b++){var sp=new T.Sprite(new T.SpriteMaterial({map:bk,color:[0xffb066,0xff8a3d,0xffd9a0,0x6fc3d6][b%4],transparent:true,opacity:.25+Math.random()*.3,blending:T.AdditiveBlending,depthWrite:false}));
+sp.position.set(-12+Math.random()*50,1.5+Math.random()*9,-9-Math.random()*8);var s=1+Math.random()*3;sp.scale.set(s,s,1);S.add(sp)}
+
+/* coffee */
+var coffee=new T.Group();coffee.position.set(0,0,0);S.add(coffee);
+var ceramic=new T.MeshPhysicalMaterial({color:0xfaf4ea,roughness:.22,clearcoat:1,clearcoatRoughness:.08,side:T.DoubleSide});
+var prof=[[0,0],[.7,0],[.85,.1],[1.05,.9],[1.1,1.3],[1.0,1.3],[.95,.9],[.7,.2],[0,.15]].map(function(p){return new T.Vector2(p[0],p[1])});
+coffee.add(mesh(new T.CylinderGeometry(1.75,1.35,.12,64),ceramic,0,.06,0));
+coffee.add(mesh(new T.LatheGeometry(prof,64),ceramic,0,.12,0));
+var h=mesh(new T.TorusGeometry(.4,.09,16,32,Math.PI*1.2),ceramic,1.08,.85,0);h.rotation.z=-Math.PI*.6;coffee.add(h);
+var art=tex(256,256,function(c){var g=c.createRadialGradient(128,128,10,128,128,128);g.addColorStop(0,'#8a5230');g.addColorStop(1,'#4a2512');c.fillStyle=g;c.fillRect(0,0,256,256);
+c.fillStyle='#f1dcc0';for(var i=0;i<7;i++){c.beginPath();c.ellipse(128,196-i*22,76-i*8,15,0,0,7);c.fill()}c.fillRect(124,40,8,70);
+c.strokeStyle='#5a2e16';c.lineWidth=3;for(var k=0;k<6;k++){c.beginPath();c.moveTo(60,190-k*22);c.quadraticCurveTo(128,170-k*22,196,190-k*22);c.stroke()}});
+var liq=mesh(new T.CircleGeometry(.99,64),new T.MeshPhysicalMaterial({map:art,roughness:.15,clearcoat:1}),0,1.27,0);liq.rotation.x=-Math.PI/2;coffee.add(liq);
+var steam=[],sm=tex(64,64,function(c){var g=c.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,.7)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,64,64)},false);
+for(var i=0;i<22;i++){var p=new T.Sprite(new T.SpriteMaterial({map:sm,transparent:true,opacity:0,depthWrite:false}));p.userData={t:Math.random(),x:(Math.random()-.5)*.7,z:(Math.random()-.5)*.7};S.add(p);steam.push(p)}
+
+/* pizza */
+var pizza=new T.Group();pizza.position.set(7,0,0);S.add(pizza);
+pizza.add(mesh(new T.CylinderGeometry(2,2,.1,64),std(0x7a4a26,.5),0,.05,0));
+var top=tex(512,512,function(c){c.fillStyle='#e6b55a';c.fillRect(0,0,512,512);var g=c.createRadialGradient(256,256,0,256,256,240);g.addColorStop(0,'#f6cd68');g.addColorStop(1,'#e9a93e');c.fillStyle=g;c.beginPath();c.arc(256,256,225,0,7);c.fill();
+for(var i=0;i<40;i++){c.fillStyle='rgba(200,60,30,.25)';c.beginPath();c.arc(256+(Math.random()-.5)*380,256+(Math.random()-.5)*380,10+Math.random()*18,0,7);c.fill()}
+for(var j=0;j<10;j++){var a=j/10*6.283,r=j%2?95:170,x=256+Math.cos(a)*r,y=256+Math.sin(a)*r;c.fillStyle='#8d1a14';c.beginPath();c.arc(x,y,36,0,7);c.fill();c.fillStyle='#b8281f';c.beginPath();c.arc(x,y,31,0,7);c.fill();c.fillStyle='rgba(255,140,90,.4)';c.beginPath();c.arc(x-8,y-8,10,0,7);c.fill()}
+for(var k=0;k<14;k++){c.fillStyle='#3f8a2e';c.beginPath();c.ellipse(256+(Math.random()-.5)*340,256+(Math.random()-.5)*340,16,8,Math.random()*3,0,7);c.fill()}});
+var crust=std(0xd99a45,.8);
+pizza.add(mesh(new T.CylinderGeometry(1.65,1.65,.12,64),[crust,new T.MeshStandardMaterial({map:top,roughness:.45}),crust],0,.16,0));
+var ring=mesh(new T.TorusGeometry(1.6,.13,16,64),crust,0,.2,0);ring.rotation.x=Math.PI/2;pizza.add(ring);
+
+/* burger */
+var burger=new T.Group();burger.position.set(14,0,0);S.add(burger);
+var bun=std(0xd98a3d,.55);
+burger.add(mesh(new T.CylinderGeometry(1,.9,.32,48),bun,0,.16,0));
+burger.add(mesh(new T.CylinderGeometry(.98,.98,.3,48),std(0x3b1f12,.9),0,.47,0));
+var ch=mesh(new T.BoxGeometry(2.1,.04,2.1),std(0xf5b82e,.4),0,.65,0);ch.rotation.y=Math.PI/4;burger.add(ch);
+var lt=mesh(new T.TorusGeometry(1,.1,12,48),std(0x5fa83a,.5),0,.74,0);lt.rotation.x=Math.PI/2;lt.scale.set(1,1,.5);burger.add(lt);
+burger.add(mesh(new T.CylinderGeometry(.9,.9,.08,40),std(0xc8331f,.4),0,.83,0));
+var tb=mesh(new T.SphereGeometry(1.08,48,24,0,6.2832,0,Math.PI/2),new T.MeshPhysicalMaterial({color:0xd98a3d,roughness:.4,clearcoat:.4}),0,.87,0);tb.scale.y=.9;burger.add(tb);
+for(var s2=0;s2<16;s2++){var th=Math.random()*6.283,ph=Math.random()*1.0,sd=mesh(new T.SphereGeometry(.05,8,6),std(0xf6e7c1,.5),Math.sin(ph)*Math.cos(th)*1.1,.87+Math.cos(ph)*.98,Math.sin(ph)*Math.sin(th)*1.1);sd.scale.y=.6;burger.add(sd)}
+
+/* camera path */
+var K=[{x:0,z:7.5,o:-1.9},{x:7,z:8.5,o:1.9},{x:14,z:7.5,o:-1.9},{x:7,z:18,o:3.5}];
+var mx=0,my=0,sp2=0,cx=0,cz=7.5,co=0;
+addEventListener('mousemove',function(e){mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
+addEventListener('scroll',function(){var m=document.documentElement.scrollHeight-innerHeight;sp2=m>0?scrollY/m:0});
+function resize(){R.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}
+addEventListener('resize',resize);resize();
+var clk=new T.Clock();
+function tick(){
+var t=clk.getElapsedTime(),wide=innerWidth>760;
+var f=Math.min(sp2*3,2.999),i=Math.floor(f),u=f-i;u=u*u*(3-2*u);
+var a=K[i],b=K[i+1],tx=a.x+(b.x-a.x)*u,tz=a.z+(b.z-a.z)*u,to=wide?a.o+(b.o-a.o)*u:0;
+cx+=(tx-cx)*.08;cz+=(tz-cz)*.08;co+=(to-co)*.08;
+var px=cx+co+mx*1.2;
+cam.position.set(px,3.4-my*.6,cz*(wide?1:1.35));cam.lookAt(cx+co,1.0,0);
+coffee.rotation.y=t*.25;pizza.rotation.y=t*.18;burger.rotation.y=t*.22;
+steam.forEach(function(p){var d=p.userData;d.t=(d.t+.0035)%1;p.position.set(d.x+Math.sin(t*1.6+d.x*9)*.18,1.6+d.t*2.8,d.z);var s=.6+d.t*1.8;p.scale.set(s,s,1);p.material.opacity=Math.sin(d.t*Math.PI)*.28});
+R.render(S,cam);requestAnimationFrame(tick)}
+tick();
+})();
+</script>
+</body>
+</html>
